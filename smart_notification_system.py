@@ -1,13 +1,4 @@
-"""
-Smart Notification System
-=========================
-Demonstrates three design patterns:
-  1. Singleton   – NotificationManager (one central hub)
-  2. Observer    – Users subscribe/unsubscribe and receive notifications
-  3. Factory     – NotificationFactory creates the right notification type
 
-Language: Python 3
-"""
 
 from __future__ import annotations
 import datetime
@@ -19,11 +10,6 @@ from typing import List
 # PATTERN 1 — SINGLETON: NotificationManager
 # ─────────────────────────────────────────────
 class NotificationManager:
-    """
-    Singleton class that acts as the central hub for the notification system.
-    Guarantees only ONE instance exists throughout the program's lifetime.
-    Holds the list of subscribers and dispatches notifications.
-    """
     _instance: NotificationManager | None = None
 
     def __new__(cls) -> "NotificationManager":
@@ -34,7 +20,6 @@ class NotificationManager:
             print("[Singleton] NotificationManager instance created.")
         return cls._instance
 
-    # ── Observer pattern helpers ──────────────────────────────────────────
     def subscribe(self, observer: "Observer") -> None:
         if observer not in self._subscribers:
             self._subscribers.append(observer)
@@ -61,7 +46,7 @@ class NotificationManager:
 # PATTERN 2 — OBSERVER: User (Concrete Observer)
 # ─────────────────────────────────────────────
 class Observer(ABC):
-    """Abstract base class for all observers (subscribers)."""
+  
 
     @property
     @abstractmethod
@@ -72,10 +57,7 @@ class Observer(ABC):
 
 
 class User(Observer):
-    """
-    Concrete Observer that represents an end-user.
-    When a notification is dispatched, receive() is called automatically.
-    """
+  
 
     def __init__(self, username: str, preferred_channel: str = "email") -> None:
         self._name = username
@@ -155,21 +137,19 @@ class NotificationFactory:
         return obj
 
 
-# ─────────────────────────────────────────────
-# DEMO
-# ─────────────────────────────────────────────
+
 def main() -> None:
     print("=" * 60)
     print("   SMART NOTIFICATION SYSTEM — Design Patterns Demo")
     print("=" * 60)
 
-    # ── Singleton: both calls return the same instance ──────────────────
+  
     print("\n── Singleton Demo ──────────────────────────────────────────")
     mgr1 = NotificationManager()
     mgr2 = NotificationManager()
     print(f"mgr1 is mgr2 → {mgr1 is mgr2}")   # True
 
-    # ── Observer: subscribe users ────────────────────────────────────────
+  
     print("\n── Observer Demo ───────────────────────────────────────────")
     alice = User("Alice", preferred_channel="email")
     bob   = User("Bob",   preferred_channel="sms")
@@ -179,7 +159,7 @@ def main() -> None:
     mgr1.subscribe(bob)
     mgr1.subscribe(carol)
 
-    # ── Factory + Observer: create and broadcast notifications ────────────
+  
     print("\n── Factory + Broadcast Demo ────────────────────────────────")
     n1 = NotificationFactory.create("alert",    "Server CPU at 95%!",        "high")
     n2 = NotificationFactory.create("reminder", "Team standup in 10 minutes","normal")
@@ -188,17 +168,17 @@ def main() -> None:
     mgr1.notify_all(n1)
     mgr1.notify_all(n2)
 
-    # Unsubscribe Bob, then send promo — Bob won't receive it
+  
     print("\n── Unsubscribe Demo ────────────────────────────────────────")
     mgr1.unsubscribe(bob)
     mgr1.notify_all(n3)
 
-    # ── Audit log ────────────────────────────────────────────────────────
+  
     print("\n── Audit Log ───────────────────────────────────────────────")
     for entry in mgr1.get_log():
         print(entry)
 
-    # ── Alice's inbox ────────────────────────────────────────────────────
+
     print(f"\n── Alice's Inbox ({len(alice.inbox)} messages) ──────────────────────")
     for msg in alice.inbox:
         print(msg)
